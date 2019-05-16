@@ -1,0 +1,113 @@
+---
+title: "textbookk"
+author: "liuchiahsien"
+date: "2019年5月17日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Programming statistical graphics
+
+## 1.Bar chart
+####利用VADeaths資料集，觀察維吉尼亞州不同人口與死亡率間的關係
+```{r,cache=TRUE,comment=""}
+VADeaths
+```
+```{r}
+barplot(VADeaths, beside=FALSE, legend=FALSE, ylim=c(0, 90), ylab="Deaths per 1000", main="Death rates in Virginia")
+barplot(VADeaths, beside=TRUE, legend=TRUE, ylim=c(0, 90), ylab="Deaths per 1000", main="Death rates in Virginia")
+```
+
+####其中，ylim=c(0,90)是控制Y軸所呈現的數值範圍，而兩張圖間的差異在於，beside=TRUE的參數會使每條bar並排呈現，legend=TRUE的參數會使圖示呈現在右上角。
+
+## 2.Dot chart
+
+```{r,cache=TRUE}
+dotchart(VADeaths,xlim=c(0, 75),xlab="Deaths per 1000",main="Death rates in Virginia")
+```
+
+
+
+## 3.Pie charts
+```{r,cache=TRUE}
+groupsizes=c(18,30,32,10,10)
+labels=c("A","B","C","D","F")
+pie(groupsizes, labels, col=c("grey40", "white", "grey", "black", "grey90")) 
+```
+
+## 4.Boxplot
+####利用鳶尾花資料集，觀察花萼與品種間的關係
+```{r,cache=TRUE}
+boxplot(Sepal.Length ~ Species, data = iris,ylab = "Sepal length (cm)", main = "Iris measurements",boxwex = 0.5)
+```
+
+####由圖中可以清楚辨別每個品種花萼長度的範圍及分布狀況
+
+
+# ggplot()
+#### gg意指grammer of graphics，此套件是以疊加的方式繪圖，步驟如下：
+
+#### 1.用ggplot建構出底圖畫布
+
+#### 2.設定Aesthetic attributes，aes()負責將素材綁定至X軸與Y軸
+
+#### 3.告訴ggplot物件要以什麼形式呈現繪圖，如以geom_為基礎，底線後面加上樣式，如geom_histogram()為直方圖、geom_boxplot()	盒鬚圖、geom_point()散佈圖
+
+##實作一
+###(利用titanic數據集)
+###load ggplot2 packages
+
+
+
+```{r,warning=FALSE}
+library("ggplot2")
+```
+
+```{r,cache=TRUE,comment=""}
+data=read.csv("titanic.csv") #先將資料匯入
+data=na.omit(data) #刪除遺失值
+dim(data)
+
+attach(data)
+head(data)#查看前五筆資料
+```
+
+###step1.先放底圖畫布
+```{r}
+ggplot(data)
+```
+
+###step2.確定X及Y軸的變數，疊加上geom_函數，此處以散布圖形式呈現
+```{r}
+ggplot(data)+geom_point(aes(x=Age,y=Fare))
+```
+
+#### 由圖中可觀察出年齡與票價間之關係
+
+###step3.最後可以加上趨勢線或標題
+```{r,warning=FALSE,message=FALSE}
+attach(data)
+ggplot(data)+geom_point(aes(x=Age,y=Fare))+geom_smooth(aes(x=Age,y=Fare))+#用geom_smooth劃出趨勢線
+labs(title="Scatter of Age-Fare",x="Age",y="Fare")#用labs加上文字敘述
+
+```
+
+
+##實作二
+```{r,message=FALSE}
+attach(data)
+```
+
+```{r,comment=""}
+sum(Sex == "female")#女性個數
+sum(Sex == "male")#男性個數
+```
+
+```{r)}
+
+ggplot(data,aes(x=Sex))+geom_bar()
+ggplot(data,aes(x=Sex))+geom_bar(aes(fill=Sex))+
+labs(title="男女性別個數比較長條圖")
